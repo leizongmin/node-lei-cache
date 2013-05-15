@@ -1,0 +1,35 @@
+{
+  "name":           "lei-cache",
+  "main":           "./lib/index.js",
+  "version":        "0.1.0",
+  "description":    "Memory cache pool",
+  "keywords":       ["cache", "memory"],
+  "author":         "Zongmin Lei <leizongmin@gmail.com> (http://ucdok.com)",
+  "contributors": [
+    {"name": "Zongmin Lei", "email": "leizongmin@gmail.com"}
+  ],
+  "repository": {
+    "type": "git",
+    "url":  "git://github.com/leizongmin/lei-cache.git"
+  },
+  "licenses":     [{
+    "type":         "MIT",
+    "url":          "https://raw.github.com/leizongmin/lei-cache/master/MIT-License"
+  }],
+  "bugs":{
+    "url":          "https://github.com/leizongmin/lei-cache/issues"
+  },
+  "engines": {
+    "node":         ">= 0.6.0"
+  },
+  "dependencies": {
+    "debug":        "~0.7"
+  },
+  "devDependencies":	{
+    "mocha":        "~1.9",
+    "should":       "~1.2"
+  },
+  "scripts": {
+    "test":         "mocha -t 5000"
+  }
+}

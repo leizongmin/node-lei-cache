@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>lei-cache Documentation</title>
+    <meta name="keywords" content="cache,memory" />
+    <meta name="description" content="Memory cache pool" />
+    <script src="assets/prettify.js"></script>
+    <script src="assets/jquery-1.8.2.min.js"></script>
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" type="text/css" href="assets/base.css" />
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="./index.html">lei-cache</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+            
+              <li>
+                <a href="./api.html">API Docs</a>
+              </li>
+            
+            
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <header class="jumbotron subhead">
+      <div class="container">
+        <h1>lei-cache <small>Version: 0.1.0 By @Zongmin Lei &lt;leizongmin@gmail.com&gt; (http://ucdok.com)</small></h1>
+        <p class="lead">
+          Memory cache pool
+        </p>
+      </div>
+    </header>
+<div class="container content">
+  <div class="row">
+    <div class="span3 bs-docs-sidebar">
+      <ul class="nav nav-list bs-docs-sidenav affix">
+
+  <li>
+    <a href="#api_index"><i class="icon-chevron-right"></i>index</a>
+  </li>
+
+</ul>
+
+    </div>
+    <div class="span9">
+      
+        <section id="api_index" class="api">
+  <h2>index: API索引</h2>
+  <ul class="indexs">
+  
+    <li>
+      <a href="#_debug">debug</a>
+    </li>
+
+    <li>
+      <a href="#_Cache">Cache</a>
+    </li>
+
+    <li>
+      <a href="#_reset">reset</a>
+    </li>
+
+    <li>
+      <a href="#_destroy">destroy</a>
+    </li>
+
+    <li>
+      <a href="#_set">set</a>
+    </li>
+
+    <li>
+      <a href="#_get">get</a>
+    </li>
+
+    <li>
+      <a href="#_delete">delete</a>
+    </li>
+
+    <li>
+      <a href="#_each">each</a>
+    </li>
+
+    <li>
+      <a href="#__getData">_getData</a>
+    </li>
+
+    <li>
+      <a href="#__hit">_hit</a>
+    </li>
+
+    <li>
+      <a href="#__freeExpired">_freeExpired</a>
+    </li>
+
+    <li>
+      <a href="#__free">_free</a>
+    </li>
+
+  </ul>
+  <hr />
+
+  
+  <h3 id="_debug">
+    debug
+  </h3>
+  
+
+  <p>Memory Cache Pool</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>声明</td>
+      <td>debug</td> 
+      <td></td>
+      <td>debug</td>
+    </tr>
+  
+
+    <tr>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>undefined</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>var debug = require('debug')('peento:cache');
+
+exports = module.exports = Cache;</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_Cache">
+    Cache
+  </h3>
+  
+
+  <p>Cache Object</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>函数</td>
+      <td>Cache()</td> 
+      <td></td>
+      <td>Cache</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>size(Number)</td>
+      <td colspan="2">default: 100</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>expire(Number)</td>
+      <td colspan="2">default: 3600000ms (1 hour)</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>function Cache (size, expire) {
+  if (!(size &gt; 0)) size = 100;
+  if (!(expire &gt; 0)) expire = 3600000;
+
+  this._size = size;
+  this._expire = expire;
+  this.reset();
+
+  debug('Create cache pool: size=%d, default-expire=%d', size, expire);
+}</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_reset">
+    reset
+  </h3>
+  
+
+  <p>Reset</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Cache.prototype.reset()</td> 
+      <td></td>
+      <td>reset</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Cache.prototype.reset = function () {
+  this._cache = {};
+  this._cacheSize = 0;
+  this._freePercent = 0.2;
+  this._getCounter = 0;
+  this._autoFreeCount = 200;
+};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_destroy">
+    destroy
+  </h3>
+  
+
+  <p>Destroy</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Cache.prototype.destroy()</td> 
+      <td></td>
+      <td>destroy</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Cache.prototype.destroy = function () {
+  return this.reset();
+};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_set">
+    set
+  </h3>
+  
+
+  <p>Set item</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Cache.prototype.set()</td> 
+      <td></td>
+      <td>set</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>name(String)</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>data(Object)</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>expire(Number)</td>
+      <td colspan="2">(optional)</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Cache.prototype.set = function (name, data, expire) {
+  if (!(expire &gt; 0)) expire = this._expire;
+
+  var cache = this._cache;
+  var timestamp = Date.now();
+
+  // format: [visited counter, last visited, expire, data]
+  if (!(name in cache)) this._cacheSize++;
+  cache[name] = [0, timestamp, timestamp + expire, data];
+
+  debug('Set cache: [%s] expire=%d(%d)', name, expire, timestamp);
+
+  this._free();
+};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_get">
+    get
+  </h3>
+  
+
+  <p>Get item</p>
+
+<p>Examples:<br />  cache.get('a');        // will returns the cache item "a", if cache not exists, returns undefined<br />  cache.get('a', 123);   // will returns the cache item "a", if cache not exists, returns 123</p>
+
+<p>cache.get('a', getDataFromDB, callback);  // call the function "callback", passing the cache item "a" as the second<br />                                            // arguments, if cache not exists, call the "getDataFromDB" before<br />  // the hetDataFromDB function<br />  function getDataFromDB (name, save, callback) {<br />    console.log('Get cache item "%s" from DB...', name);<br />    // do something...<br />    save(123);           // is equivalent to: cache.set(name, 123);<br />    save(123, expire);   // is equivalent to: cache.set(name, 123, expire);<br />    // callback<br />    callback(null, 123); // returns the value, but not save to cache pool, you must call save(123) to save it<br />  }</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Cache.prototype.get()</td> 
+      <td></td>
+      <td>get</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>name(String)</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>defaultValue(Object,Function)</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>callback(Function)</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+    <tr>
+      <td>返回</td>
+      <td>Object</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Cache.prototype.get = function (name, defaultValue, callback) {
+  var me = this;
+  var cache = me._cache;
+
+  // automatically to free the expired cache item
+  me._getCounter++;
+  if (me._getCounter % me._autoFreeCount === 0) {
+    me._free();
+  }
+
+  debug('Get cache: [%s] default=%s', name, defaultValue);
+
+  if (typeof callback === 'function') {
+    // asynchronous
+    if (name in cache) {
+      me._hit(name);
+      return callback(null, me._getData(cache[name]));
+    }
+
+    // call function &quot;defaultValue&quot; to get the data
+    defaultValue(name, function (data, expire) {
+      me.set(name, data, expire);
+    }, callback);
+
+  } else {
+    // synchronous
+    if (name in cache) {
+      me._hit(name);
+      return me._getData(cache[name]);
+    } else {
+      return defaultValue;
+    }
+  }
+};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_delete">
+    delete
+  </h3>
+  
+
+  <p>Delete item</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Cache.prototype.delete()</td> 
+      <td></td>
+      <td>delete</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>name(String)</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+    <tr>
+      <td>返回</td>
+      <td>Boolean</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Cache.prototype.delete = function (name) {
+  debug('Delete cache: [%s]', name);
+
+  var cache = this._cache;
+  if (name in cache) {
+    delete cache[name];
+    this._cacheSize--;
+    return true;
+  } else {
+    return false;
+  }
+};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_each">
+    each
+  </h3>
+  
+
+  <p>Iterate through all the cache item</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Cache.prototype.each()</td> 
+      <td></td>
+      <td>each</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>onItem(Function)</td>
+      <td colspan="2">Fromat: function (name, data, moreInfo, this) {}</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Cache.prototype.each = function (onItem) {
+  var cache = this._cache;
+  for (var name in cache) {
+    var item = cache[name];
+    onItem(name, this._getData(item), item, this);
+  }
+};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="__getData">
+    _getData
+  </h3>
+  
+
+  <p>Get data</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Cache.prototype._getData()</td> 
+      <td></td>
+      <td>_getData</td>
+    </tr>
+  
+
+    <tr>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>undefined</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>item(Array)</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+    <tr>
+      <td>返回</td>
+      <td>Object</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Cache.prototype._getData = function (item) {
+  return item[3];
+};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="__hit">
+    _hit
+  </h3>
+  
+
+  <p>Update last visited</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Cache.prototype._hit()</td> 
+      <td></td>
+      <td>_hit</td>
+    </tr>
+  
+
+    <tr>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>undefined</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>name(String)</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Cache.prototype._hit = function (name) {
+  var item = this._cache[name];
+  item[0]++;
+  item[1] = Date.now();
+};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="__freeExpired">
+    _freeExpired
+  </h3>
+  
+
+  <p>Free expired cache item, returns the number</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Cache.prototype._freeExpired()</td> 
+      <td></td>
+      <td>_freeExpired</td>
+    </tr>
+  
+
+    <tr>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>undefined</td>
+    </tr>
+  
+
+    <tr>
+      <td>返回</td>
+      <td>Number</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Cache.prototype._freeExpired = function () {
+  var cache = this._cache;
+  var timestamp = Date.now();
+  var counter = 0;
+  
+  for (var name in cache) {
+    if (cache[name][2] &lt;= timestamp) {
+      this.delete(name);
+      counter++;
+    }
+  }
+  
+  return counter;
+};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="__free">
+    _free
+  </h3>
+  
+
+  <p>Free</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Cache.prototype._free()</td> 
+      <td></td>
+      <td>_free</td>
+    </tr>
+  
+
+    <tr>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>undefined</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Cache.prototype._free = function () {
+  var me = this;
+
+  debug('Auto free: pool-size=%d, cache-size=%d', me._cacheSize, me._size);
+
+  // free expired items
+  var c = me._freeExpired();
+  if (!c &amp;&amp; me._cacheSize &gt; me._size) {
+
+    // not enough? free other least-recently-used items
+    var cache = me._cache;
+    var list = [];
+    me.each(function (name, data, info) {
+      list.push({n: name, t: info[1]});
+    });
+    list.sort(function (a, b) {
+      return a.t - b.t;
+    });
+    list.slice(0, me._freePercent * me._cacheSize).forEach(function (item) {
+      me.delete(item.n);
+    });
+
+  }
+};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+</section>
+      
+    </div>
+  </div>
+</div>
+      <footer class="footer">
+        <div class="container">
+          <p class="pull-right">
+            <a href="#">Back to top</a>
+          </p>
+          <p>此文档通过doxmate生成。主题借鉴Bootstrap API文档风格，注解基于<a href="https://github.com/visionmedia/dox">Dox</a>。欢迎关注doxmate作者<a href="http://weibo.com/shyvo" target="_blank">@朴灵</a></p>
+          <ul class="footer-links">
+            <li><a href="https://github.com/visionmedia/dox">Dox主页</a></li>
+            <li><a href="http://html5ify.com/doxmate">Doxmate主页</a></li>
+            <li><a href="https://github.com/JacksonTian/doxmate/issues?state=open">提交bug</a></li>
+          </ul>
+      </div>
+    </footer>
+    <script>
+      $(function() {
+        $('pre').addClass('prettyprint');
+        $('td pre').removeClass('prettyprint');
+        prettyPrint();
+        var $window = $(window);
+        $('.bs-docs-sidenav').affix({
+          offset: {
+            top: function () {
+              return $window.width() <= 980 ? 290 : 210
+            },
+            bottom: 270
+          }
+        });
+        $(".content").find('h1, h2, h3, h4, h5, h6').each(function () {
+          var node = $(this);
+          if (!node.attr("id")) {
+            node.attr("id", "index_" + node.text());
+          }
+          node.css("paddingTop", 40);
+        });
+      });
+    </script>
+  
+  </body>
+</html>
