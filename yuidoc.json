@@ -1,0 +1,9 @@
+{
+  "name":         "The lei-cache API",
+  "description":  "The lei-cache API: memory cache pool",
+  "version":      "0.1.0",
+  "url":          "http://ucdok.com/lei-cache",
+  "options": {
+    "outdir":     "./doc"
+  }
+}

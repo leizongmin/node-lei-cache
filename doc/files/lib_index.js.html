@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>lib\index.js - The lei-cache API</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title="The lei-cache API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/Cache.html">Cache</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/lei-cache.html">lei-cache</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: lib\index.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * Memory Cache Pool
+ *
+ * @module lei-cache
+ * @author Zongmin Lei &lt;leizongmin@gmail.com&gt;
+ */
+
+var debug = require(&#x27;debug&#x27;)(&#x27;peento:cache&#x27;);
+
+exports = module.exports = Cache;
+
+
+/**
+ * Cache Object
+ *
+ * @class Cache 
+ * @constructor
+ * @param {Number} size     default: 100
+ * @param {Number} expire   default: 3600000ms (1 hour)
+ */
+function Cache (size, expire) {
+  if (!(size &gt; 0)) size = 100;
+  if (!(expire &gt; 0)) expire = 3600000;
+
+  this._size = size;
+  this._expire = expire;
+  this.reset();
+
+  debug(&#x27;Create cache pool: size=%d, default-expire=%d&#x27;, size, expire);
+}
+
+/**
+ * Reset
+ *
+ * @method reset
+ */
+Cache.prototype.reset = function () {
+  this._cache = {};
+  this._cacheSize = 0;
+  this._freePercent = 0.2;
+  this._getCounter = 0;
+  this._autoFreeCount = 200;
+};
+
+/**
+ * Destroy
+ *
+ * @method destroy
+ */
+Cache.prototype.destroy = function () {
+  return this.reset();
+};
+
+/**
+ * Set item
+ *
+ * @method set
+ * @param {String} name
+ * @param {Object} data
+ * @param {Number} expire   (optional)
+ */
+Cache.prototype.set = function (name, data, expire) {
+  if (!(expire &gt; 0)) expire = this._expire;
+
+  var cache = this._cache;
+  var timestamp = Date.now();
+
+  // format: [visited counter, last visited, expire, data]
+  if (!(name in cache)) this._cacheSize++;
+  cache[name] = [0, timestamp, timestamp + expire, data];
+
+  debug(&#x27;Set cache: [%s] expire=%d(%d)&#x27;, name, expire, timestamp);
+
+  this._free();
+};
+
+/**
+ * Get item
+ *
+ * Examples:
+ *   cache.get(&#x27;a&#x27;);        // will returns the cache item &quot;a&quot;, if cache not exists, returns undefined
+ *   cache.get(&#x27;a&#x27;, 123);   // will returns the cache item &quot;a&quot;, if cache not exists, returns 123
+ *
+ *   cache.get(&#x27;a&#x27;, getDataFromDB, callback);  // call the function &quot;callback&quot;, passing the cache item &quot;a&quot; as the second
+ *                                             // arguments, if cache not exists, call the &quot;getDataFromDB&quot; before
+ *   // the hetDataFromDB function
+ *   function getDataFromDB (name, save, callback) {
+ *     console.log(&#x27;Get cache item &quot;%s&quot; from DB...&#x27;, name);
+ *     // do something...
+ *     save(123);           // is equivalent to: cache.set(name, 123);
+ *     save(123, expire);   // is equivalent to: cache.set(name, 123, expire);
+ *     // callback
+ *     callback(null, 123); // returns the value, but not save to cache pool, you must call save(123) to save it
+ *   }
+ *
+ * @method get
+ * @param {String} name
+ * @param {Object|Function} defaultValue
+ * @param {Function} callback
+ * @return {Object}
+ */
+Cache.prototype.get = function (name, defaultValue, callback) {
+  var me = this;
+  var cache = me._cache;
+
+  // automatically to free the expired cache item
+  me._getCounter++;
+  if (me._getCounter % me._autoFreeCount === 0) {
+    me._free();
+  }
+
+  debug(&#x27;Get cache: [%s] default=%s&#x27;, name, defaultValue);
+
+  if (typeof callback === &#x27;function&#x27;) {
+    // asynchronous
+    if (name in cache) {
+      me._hit(name);
+      return callback(null, me._getData(cache[name]));
+    }
+
+    // call function &quot;defaultValue&quot; to get the data
+    defaultValue(name, function (data, expire) {
+      me.set(name, data, expire);
+    }, callback);
+
+  } else {
+    // synchronous
+    if (name in cache) {
+      me._hit(name);
+      return me._getData(cache[name]);
+    } else {
+      return defaultValue;
+    }
+  }
+};
+
+/**
+ * Delete item
+ *
+ * @method delete
+ * @param {String} name
+ * @return {Boolean}
+ */
+Cache.prototype.delete = function (name) {
+  debug(&#x27;Delete cache: [%s]&#x27;, name);
+
+  var cache = this._cache;
+  if (name in cache) {
+    delete cache[name];
+    this._cacheSize--;
+    return true;
+  } else {
+    return false;
+  }
+};
+
+/**
+ * Iterate through all the cache item
+ *
+ * @method each
+ * @param {Function} onItem Fromat: function (name, data, moreInfo, this) {}
+ */
+Cache.prototype.each = function (onItem) {
+  var cache = this._cache;
+  for (var name in cache) {
+    var item = cache[name];
+    onItem(name, this._getData(item), item, this);
+  }
+};
+
+/**
+ * Get data
+ *
+ * @param {Array} item
+ * @return {Object}
+ */
+Cache.prototype._getData = function (item) {
+  return item[3];
+};
+
+/**
+ * Update last visited
+ *
+ * @param {String} name
+ */
+Cache.prototype._hit = function (name) {
+  var item = this._cache[name];
+  item[0]++;
+  item[1] = Date.now();
+};
+
+/**
+ * Free expired cache item, returns the number
+ *
+ * @return {Number}
+ */
+Cache.prototype._freeExpired = function () {
+  var cache = this._cache;
+  var timestamp = Date.now();
+  var counter = 0;
+  
+  for (var name in cache) {
+    if (cache[name][2] &lt;= timestamp) {
+      this.delete(name);
+      counter++;
+    }
+  }
+  
+  return counter;
+};
+
+/**
+ * Free
+ */
+Cache.prototype._free = function () {
+  var me = this;
+
+  debug(&#x27;Auto free: pool-size=%d, cache-size=%d&#x27;, me._cacheSize, me._size);
+
+  // free expired items
+  var c = me._freeExpired();
+  if (!c &amp;&amp; me._cacheSize &gt; me._size) {
+
+    // not enough? free other least-recently-used items
+    var cache = me._cache;
+    var list = [];
+    me.each(function (name, data, info) {
+      list.push({n: name, t: info[1]});
+    });
+    list.sort(function (a, b) {
+      return a.t - b.t;
+    });
+    list.slice(0, me._freePercent * me._cacheSize).forEach(function (item) {
+      me.delete(item.n);
+    });
+
+  }
+};
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

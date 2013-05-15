@@ -1,0 +1,265 @@
+{
+    "project": {
+        "name": "The lei-cache API",
+        "description": "The lei-cache API: memory cache pool",
+        "version": "0.1.0",
+        "url": "http://ucdok.com/lei-cache"
+    },
+    "files": {
+        "lib\\index.js": {
+            "name": "lib\\index.js",
+            "modules": {
+                "lei-cache": 1
+            },
+            "classes": {
+                "Cache": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "test\\test.js": {
+            "name": "test\\test.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "lei-cache": {
+            "name": "lei-cache",
+            "submodules": {},
+            "classes": {
+                "Cache": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "lib\\index.js",
+            "line": 13,
+            "description": "Memory Cache Pool",
+            "author": "Zongmin Lei <leizongmin@gmail.com>"
+        }
+    },
+    "classes": {
+        "Cache": {
+            "name": "Cache",
+            "shortname": "Cache",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "lei-cache",
+            "namespace": "",
+            "file": "lib\\index.js",
+            "line": 13,
+            "description": "Cache Object",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "size",
+                    "description": "default: 100",
+                    "type": "Number"
+                },
+                {
+                    "name": "expire",
+                    "description": "default: 3600000ms (1 hour)",
+                    "type": "Number"
+                }
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "lib\\index.js",
+            "line": 32,
+            "description": "Reset",
+            "itemtype": "method",
+            "name": "reset",
+            "class": "Cache",
+            "module": "lei-cache"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 45,
+            "description": "Destroy",
+            "itemtype": "method",
+            "name": "destroy",
+            "class": "Cache",
+            "module": "lei-cache"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 54,
+            "description": "Set item",
+            "itemtype": "method",
+            "name": "set",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "data",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "expire",
+                    "description": "(optional)",
+                    "type": "Number"
+                }
+            ],
+            "class": "Cache",
+            "module": "lei-cache"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 77,
+            "description": "Get item\n\nExamples:\n  cache.get('a');        // will returns the cache item \"a\", if cache not exists, returns undefined\n  cache.get('a', 123);   // will returns the cache item \"a\", if cache not exists, returns 123\n\n  cache.get('a', getDataFromDB, callback);  // call the function \"callback\", passing the cache item \"a\" as the second\n                                            // arguments, if cache not exists, call the \"getDataFromDB\" before\n  // the hetDataFromDB function\n  function getDataFromDB (name, save, callback) {\n    console.log('Get cache item \"%s\" from DB...', name);\n    // do something...\n    save(123);           // is equivalent to: cache.set(name, 123);\n    save(123, expire);   // is equivalent to: cache.set(name, 123, expire);\n    // callback\n    callback(null, 123); // returns the value, but not save to cache pool, you must call save(123) to save it\n  }",
+            "itemtype": "method",
+            "name": "get",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "defaultValue",
+                    "description": "",
+                    "type": "Object|Function"
+                },
+                {
+                    "name": "callback",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Object"
+            },
+            "class": "Cache",
+            "module": "lei-cache"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 137,
+            "description": "Delete item",
+            "itemtype": "method",
+            "name": "delete",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Cache",
+            "module": "lei-cache"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 157,
+            "description": "Iterate through all the cache item",
+            "itemtype": "method",
+            "name": "each",
+            "params": [
+                {
+                    "name": "onItem",
+                    "description": "Fromat: function (name, data, moreInfo, this) {}",
+                    "type": "Function"
+                }
+            ],
+            "class": "Cache",
+            "module": "lei-cache"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 171,
+            "description": "Get data",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Object"
+            },
+            "class": "Cache",
+            "module": "lei-cache"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 181,
+            "description": "Update last visited",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "Cache",
+            "module": "lei-cache"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 192,
+            "description": "Free expired cache item, returns the number",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Cache",
+            "module": "lei-cache"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 212,
+            "description": "Free",
+            "class": "Cache",
+            "module": "lei-cache"
+        },
+        {
+            "file": "test\\test.js",
+            "line": 1,
+            "description": "Tests",
+            "author": "Zongmin Lei <leizongmin@gmail.com>",
+            "class": "",
+            "module": "lei-cache"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "Missing item type\nGet data",
+            "line": " lib\\index.js:171"
+        },
+        {
+            "message": "Missing item type\nUpdate last visited",
+            "line": " lib\\index.js:181"
+        },
+        {
+            "message": "Missing item type\nFree expired cache item, returns the number",
+            "line": " lib\\index.js:192"
+        },
+        {
+            "message": "Missing item type\nFree",
+            "line": " lib\\index.js:212"
+        },
+        {
+            "message": "Missing item type\nTests",
+            "line": " test\\test.js:1"
+        }
+    ]
+}
