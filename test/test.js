@@ -85,7 +85,7 @@ describe('Cache', function () {
       c._cacheSize.should.equal(0);
       done();
 
-    }, 110);
+    }, 200);
   });
 
   it('#reset', function () {
