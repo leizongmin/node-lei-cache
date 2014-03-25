@@ -53,7 +53,7 @@ describe('Cache', function () {
       c.set('x', 111);
       c._cacheSize.should.equal(1);
       c.get('x').should.equal(111);
-      
+
       for (var i = 0; i < 100; i++) {
         c.set('b' + i, i);
       }
@@ -62,7 +62,7 @@ describe('Cache', function () {
         for (var i = 0; i < c._autoFreeCount + 1; i++) {
           c.get('b' + i);
         }
-        
+
         c._cacheSize.should.equal(0);
         done();
 
