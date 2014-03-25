@@ -11,11 +11,11 @@ $ npm install lei-cache
 
 ```javascript
 var Cache = require('lei-cache');
-    
+
 var cache = new Cache(size, defaultExpire);
-    
+
 cache.set('name', 'value', expire);
-    
+
 
 var data = cache.get('name');
 
