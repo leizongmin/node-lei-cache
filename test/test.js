@@ -72,6 +72,22 @@ describe('Cache', function () {
 
   });
 
+  it('#timer GC', function (done) {
+    var c = new Cache(10, 100);
+
+    for (var i = 0; i < 100; i++) {
+      c.set('a' + i, i);
+    }
+    c._cacheSize.should.equal(10);
+
+    setTimeout(function () {
+
+      c._cacheSize.should.equal(0);
+      done();
+
+    }, 110);
+  });
+
   it('#reset', function () {
     var c = new Cache();
     c.set('a', 123);
