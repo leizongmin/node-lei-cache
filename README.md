@@ -1,6 +1,8 @@
 lei-cache [![Build Status](https://secure.travis-ci.org/leizongmin/node-lei-cache.png?branch=master)](http://travis-ci.org/leizongmin/node-lei-cache) [![Dependencies Status](https://david-dm.org/leizongmin/node-lei-cache.png)](http://david-dm.org/leizongmin/node-lei-cache)
 =========
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/leizongmin/node-lei-cache.svg)](https://greenkeeper.io/)
+
 ### Install
 
 ```bash
